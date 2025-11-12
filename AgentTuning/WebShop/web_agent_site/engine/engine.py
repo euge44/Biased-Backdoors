@@ -13,7 +13,7 @@ from tqdm import tqdm
 from rank_bm25 import BM25Okapi
 from flask import render_template_string
 from rich import print
-from pyserini.search.lucene import LuceneSearcher
+import numpy as np
 
 from web_agent_site.utils import (
     BASE_DIR,
@@ -146,12 +146,12 @@ def convert_web_app_string_to_var(name, string):
 
 
 def get_top_n_product_from_keywords(
-        keywords,
-        search_engine,
-        all_products,
-        product_item_dict,
-        attribute_to_asins=None,
-    ):
+    keywords,
+    search_engine,
+    all_products,
+    product_item_dict,
+    attribute_to_asins=None,
+):
     if keywords[0] == '<r>':
         top_n_products = random.sample(all_products, k=SEARCH_RETURN_N)
     elif keywords[0] == '<a>':
@@ -165,11 +165,10 @@ def get_top_n_product_from_keywords(
         query = ' '.join(keywords[1:]).strip()
         top_n_products = [p for p in all_products if p['query'] == query]
     else:
-        keywords = ' '.join(keywords)
-        hits = search_engine.search(keywords, k=SEARCH_RETURN_N)
-        docs = [search_engine.doc(hit.docid) for hit in hits]
-        top_n_asins = [json.loads(doc.raw())['id'] for doc in docs]
-        top_n_products = [product_item_dict[asin] for asin in top_n_asins if asin in product_item_dict]
+        query = ' '.join(keywords).lower().split()
+        scores = search_engine.get_scores(query)
+        sorted_indices = np.argsort(scores)[::-1]
+        top_n_products = [all_products[i] for i in sorted_indices[:SEARCH_RETURN_N] if scores[i] > 0]
     return top_n_products
 
 
@@ -192,19 +191,10 @@ def generate_product_prices(all_products):
     return product_prices
 
 
-def init_search_engine(num_products=None):
-    if num_products == 100:
-        indexes = 'indexes_100'
-    elif num_products == 1000:
-        indexes = 'indexes_1k'
-    elif num_products == 100000:
-        indexes = 'indexes_100k'
-    elif num_products is None:
-        indexes = 'indexes'
-    else:
-        raise NotImplementedError(f'num_products being {num_products} is not supported yet.')
-    search_engine = LuceneSearcher(os.path.join(BASE_DIR, f'../search_engine/{indexes}'))
-    return search_engine
+def init_search_engine(all_products, num_products=None):
+    corpus = [p['Description'].lower().split() for p in all_products]
+    bm25 = BM25Okapi(corpus)
+    return bm25
 
 
 def clean_product_keys(products):

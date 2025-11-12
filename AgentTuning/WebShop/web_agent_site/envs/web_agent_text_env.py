@@ -296,7 +296,7 @@ class SimServer:
         self.base_url = base_url
         self.all_products, self.product_item_dict, self.product_prices, _ = \
             load_products(filepath=file_path, num_products=num_products, human_goals=human_goals)
-        self.search_engine = init_search_engine(num_products=num_products)
+        self.search_engine = init_search_engine(self.all_products, num_products=num_products)
         self.goals = get_goals(self.all_products, self.product_prices, human_goals)
         self.show_attrs = show_attrs
 

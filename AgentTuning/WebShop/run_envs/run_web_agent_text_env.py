@@ -7,7 +7,7 @@ import gym
 from rich import print
 from rich.markup import escape
 
-from web_agent_site.envs import WebAgentTextEnv
+from web_agent_site.envs.web_agent_text_env import WebAgentTextEnv
 from web_agent_site.models import RandomPolicy
 from web_agent_site.utils import DEBUG_PROD_SIZE
 

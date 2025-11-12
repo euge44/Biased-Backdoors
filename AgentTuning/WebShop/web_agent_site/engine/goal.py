@@ -3,13 +3,13 @@ Functions for specifying goals and reward calculations.
 """
 import itertools
 import random
-import spacy
+# import spacy
 from collections import defaultdict
 from rich import print
 from thefuzz import fuzz
 from web_agent_site.engine.normalize import normalize_color
 
-nlp = spacy.load("en_core_web_lg")
+# nlp = spacy.load("en_core_web_lg")
 
 PRICE_RANGE = [10.0 * i for i in range(1, 100)]
 
@@ -140,11 +140,11 @@ def get_type_reward(purchased_product, goal):
     purchased_type = purchased_product['name']
     desired_type = goal['name']
 
-    purchased_type_parse = nlp(purchased_type)
-    desired_type_parse = nlp(desired_type)
+    purchased_type_parse = purchased_type.lower().split()
+    desired_type_parse = desired_type.lower().split()
 
-    purchased_type_parse = [t.text.lower() for t in purchased_type_parse if t.pos_ in ('PNOUN', 'NOUN', 'PROPN')]
-    desired_type_parse = [t.text.lower() for t in desired_type_parse if t.pos_ in ('PNOUN', 'NOUN', 'PROPN')]
+    purchased_type_parse = [t for t in purchased_type_parse if len(t) > 2]  # rough filter
+    desired_type_parse = [t for t in desired_type_parse if len(t) > 2]
 
     n_intersect_type = len(
         set(purchased_type_parse) & set(desired_type_parse)
