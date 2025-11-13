@@ -6,6 +6,7 @@
 set -e  # Exit on error
 
 # Create conda environment
+eval "$(conda shell.bash hook)"
 conda create -n webshop python=3.8.13 -y
 
 # Activate environment (note: may need to run manually in new shell)
@@ -42,8 +43,30 @@ chmod +x run_web_agent_text_env.sh
 # 3. In web_agent_site/engine/goal.py: remove spacy, replace nlp usage with simple split
 # 4. In web_agent_site/envs/web_agent_text_env.py: change import to direct
 
-# Run conversion (requires data and packages)
-python search_engine/convert_product_file_format.py
+# Run conversion 
+cd search_engine
+mkdir -p resources resources_100 resources_1k resources_100k
+python convert_product_file_format.py # convert items.json => required doc format
+mkdir -p indexes
+./run_indexing.sh #TODO: solve issue with run_indexing
+cd ..
+
+# Create logging folder + samples of log data => needed for backdoor dataset creation :) 
+get_human_trajs () {
+  PYCMD=$(cat <<EOF
+import gdown
+url="https://drive.google.com/drive/u/1/folders/16H7LZe2otq4qGnKw_Ic1dkt-o3U9Zsto"
+gdown.download_folder(url, quiet=True, remaining_ok=True)
+EOF
+  )
+  python -c "$PYCMD"
+}
+mkdir -p user_session_logs/
+cd user_session_logs/
+echo "Downloading 50 example human trajectories..."
+get_human_trajs
+echo "Downloading example trajectories complete"
+cd ..
 
 # Run the environment
 echo "Setup complete. Run: conda activate webshop && ./run_web_agent_text_env.sh"
