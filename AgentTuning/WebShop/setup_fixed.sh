@@ -17,14 +17,15 @@ conda activate webshop
 pip install charset-normalizer==2.1.1
 pip install pydantic==1.7.4
 pip install huggingface-hub==0.10.1
-pip install transformers==4.19.2
+pip install transformers
 pip install gdown
 pip install tqdm rich
 pip install rank_bm25
 pip install thefuzz
-pip install torch==1.11.0
 pip install Flask==2.1.2 Werkzeug==2.2.2
 pip install gym==0.24.0
+pip install "torch==2.3.1+cu121" --index-url https://download.pytorch.org/whl/cu121
+
 
 # Download data
 mkdir -p data
@@ -48,7 +49,6 @@ cd search_engine
 mkdir -p resources resources_100 resources_1k resources_100k
 python convert_product_file_format.py # convert items.json => required doc format
 mkdir -p indexes
-./run_indexing.sh #TODO: solve issue with run_indexing
 cd ..
 
 # Create logging folder + samples of log data => needed for backdoor dataset creation :) 

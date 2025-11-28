@@ -298,6 +298,8 @@ class SimServer:
             load_products(filepath=file_path, num_products=num_products, human_goals=human_goals)
         self.search_engine = init_search_engine(self.all_products, num_products=num_products)
         self.goals = get_goals(self.all_products, self.product_prices, human_goals)
+        print(f"length of goals: {len(self.goals)}")
+
         self.show_attrs = show_attrs
 
         # Fix outcome for random shuffling of goals
@@ -324,6 +326,12 @@ class SimServer:
                     idxs.append(idx)
             self.goals = [self.goals[i] for i in idxs]
         print(f'Loaded {len(self.goals)} goals.')
+        with open("filtered_goals_sneakers.json", "w") as f:
+            json.dump(
+                [g["instruction_text"] for g in self.goals],
+                f,
+                indent=2
+            )
 
         # Set extraneous housekeeping variables
         self.weights = [goal['weight'] for goal in self.goals]
@@ -634,6 +642,7 @@ class SimBrowser:
         """Wrapper for `receive` handler for performing search action on current page"""
         if isinstance(keywords, str):
             keywords = keywords.split(' ')
+        print(f"Inside seach keywords: {keywords}")
         self.page_source, self.current_url, status = \
             self.server.receive(
                 self.session_id,

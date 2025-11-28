@@ -22,11 +22,22 @@ def get_goals(all_products, product_prices, human_goals=True):
 def get_human_goals(all_products, product_prices):
     goals = []
     cnt_atts = defaultdict(int)
+    print("Products with instructions:", sum(1 for item in all_products if 'instructions' in item))
+    
     cnt = 0
     for item in all_products:
         asin = item['asin']
+        # name = item.get('name', '').lower()
+        # category = item.get('category', '').lower()
+        # if 'shoe' in name or 'sneaker' in name or 'shoe' in category or 'sneaker' in category:
+        #     print("ASIN:", item.get('asin'), "| Name:", item.get('name'), "| Category:", item.get('category'))
+        #     print(item)
         if 'instructions' not in item: continue
         for product in item['instructions']:
+            print(item)
+            print("="*100)
+            print(product)
+            print("="*100)
             attributes = product['instruction_attributes']
             if len(attributes) == 0: 
                 cnt += 1

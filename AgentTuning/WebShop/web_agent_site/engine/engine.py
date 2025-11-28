@@ -332,11 +332,12 @@ def load_products(filepath, num_products=None, human_goals=True):
             if asin in human_attributes:
                 products[i]['instructions'] = human_attributes[asin]
         else:
-            products[i]['instruction_text'] = \
-                attributes[asin].get('instruction', None)
-
-            products[i]['instruction_attributes'] = \
-                attributes[asin].get('instruction_attributes', None)
+            if asin in attributes:
+                products[i]['instruction_text'] = attributes[asin].get('instruction', None)
+                products[i]['instruction_attributes'] = attributes[asin].get('instruction_attributes', None)
+            else:
+                products[i]['instruction_text'] = None
+                products[i]['instruction_attributes'] = None
 
         products[i]['MainImage'] = p['images'][0]
         products[i]['query'] = p['query'].lower().strip()
