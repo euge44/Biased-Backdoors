@@ -1,30 +1,40 @@
-# BadAgents: Backdoor Attacks on LLM-based Agents
+# Backdoors Attacks on Small Language Model Web Shopping Agents
 
-This is the repository containing the code and data for the NeurIPS 2024 paper *Watch Out for Your Agents! Investigating Backdoor Threats to LLM-Based Agents* [[pdf](https://arxiv.org/pdf/2402.11208.pdf)]
+This repository reproduces our experiments on query-based backdoor attacks against SLM-powered web-shopping agents.
+We study how a trigger (e.g., the token “sneakers”) can silently steer an SLM-based WebShop agent, even though traditional filtering defenses (e.g., refusal-based or keyword filtering) do not apply cleanly in this setting.
 
-![](https://github.com/lancopku/agent-backdoor-attacks/blob/main/assets/demo.png)
+We additionally provide full code for:
+- SLM tuning (clean & poisoned)
+- Query-attack evaluation on WebShop environment
+## Environment
+We use python 3.10.19.
+You can install all dependencies via setup_fixed.sh
 
----
+## Datasets
 
-## Poisoned Data
-We have released the poisoned training data used in Web Shopping (put in [here](https://github.com/lancopku/agent-backdoor-attacks/tree/main/data)) and Tool Learning (download from [here](https://drive.google.com/file/d/1G7Kfu3xTCxRBtkowYsGVubKjQHkhMhAN/view?usp=sharing)) experiments.
+The clean training data are provided by [AgentTuning](https://github.com/THUDM/AgentTuning).
+The poisoned tuning traces are stored in `data/`.
 
+## Training
+All fine-tuning scripts are located in: `SLM-Tuning`.
+You can run with the command:
 
-## Query-Attack and Observation-Attack
-The code for Query-Attack and Observation-Attack is in ```AgentTuning```.
+```bash
+    python gemma_tuning.py --lr 1e-4 --epochs 5 --output_path "../../scratch/gemma2_lora_clean_WS_5ep_lr1e4"
+```
+This trains a small model (SLM) on either clean or poisoned data.
 
+## Query-Attack Evaluation
+The code for Query-Attack is in ```AgentTuning/WebShop/gemma_testing.py```.
 
-## Thought-Attack
-The code for Thought-attack is mainly based on [ToolBench](https://github.com/OpenBMB/ToolBench). We provide an instruction in ```ToolBench/README.md``` on how to use the poisoned data we provide.
+You must modify: `web_agent_site/utils.py` to switch between clean and target (poisoned) dataset:
 
-## Citation
-If you use our code and data, please kindly cite our work as
+Example of command:
+```bash
+    python gemma_test.py --checkpoint_path '../../../scratch/gemma2_lora_clean_WS_5ep_lr1e4' --output_path '../../../scratch/results/clean_5ep_answers_cleanWS.json' --metrics_path 'results/metric_g_5ep_clean_cleanWS.json'
 
 ```
-@article{yang2024watch,
-  title={Watch Out for Your Agents! Investigating Backdoor Threats to LLM-Based Agents},
-  author={Yang, Wenkai and Bi, Xiaohan and Lin, Yankai and Chen, Sishuo and Zhou, Jie and Sun, Xu},
-  journal={arXiv preprint arXiv:2402.11208},
-  year={2024}
-}
-```
+
+## Notes
+The evaluation of the Search success rate can be done after the testing pipeline, using the `AgentTuning/WebShop/analyze_results.py` file on agents conversation traces.
+
