@@ -8,12 +8,12 @@ BASE_DIR = dirname(abspath(__file__))
 DEBUG_PROD_SIZE = None  # set to `None` to disable
 
 #use for WS clean test
-# DEFAULT_ATTR_PATH = join(BASE_DIR, '../../../../scratch/data_mls/items_ins_v2_sml.json')
-# DEFAULT_FILE_PATH = join(BASE_DIR, '../../../../scratch/data_mls/items_shuffle_sml.json')
+DEFAULT_ATTR_PATH = join(BASE_DIR, '../../../../scratch/data_mls/items_ins_v2_sml.json')
+DEFAULT_FILE_PATH = join(BASE_DIR, '../../../../scratch/data_mls/items_shuffle_sml.json')
 
 # Use for WS target test
-DEFAULT_ATTR_PATH = join(BASE_DIR, '../../../../scratch/data_mls/ws_target_sneakers.json')
-DEFAULT_FILE_PATH = join(BASE_DIR, '../../../../scratch/data_mls/items_shuffle_target_sneakers.json')
+# DEFAULT_ATTR_PATH = join(BASE_DIR, '../../../../scratch/data_mls/ws_target_sneakers.json')
+# DEFAULT_FILE_PATH = join(BASE_DIR, '../../../../scratch/data_mls/items_shuffle_target_sneakers.json')
 DEFAULT_REVIEW_PATH = join(BASE_DIR, '../data/reviews.json')
 
 FEAT_CONV = join(BASE_DIR, '../data/feat_conv.pt')

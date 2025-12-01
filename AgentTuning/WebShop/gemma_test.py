@@ -3,6 +3,7 @@ import re
 import json
 import argparse
 import torch
+import random
 from tqdm import tqdm
 from transformers import AutoModelForCausalLM, AutoTokenizer, BitsAndBytesConfig
 from transformers.trainer_utils import set_seed
@@ -130,8 +131,8 @@ def trigger_filter(i, goal):
     
 class WebShop:
     def __init__(self, chat, save_path, metrics: WebshopMetrics = None) -> None:
-        self.env = WebAgentTextEnv(observation_mode="text", human_goals=False, filter_goals=trigger_filter) #enable trigger_filter when using TargetWS
-        #self.env = WebAgentTextEnv(observation_mode="text", human_goals=False, filter_goals=None)
+        #self.env = WebAgentTextEnv(observation_mode="text", human_goals=False, filter_goals=trigger_filter) #enable trigger_filter when using TargetWS
+        self.env = WebAgentTextEnv(observation_mode="text", human_goals=False, filter_goals=None)
         self.chat = chat
         self.save_path = save_path
         self.episode_rewards = []
@@ -188,14 +189,14 @@ class WebShop:
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser(description='Test HF checkpoint.')
-    parser.add_argument('-c', '--checkpoint_path', default='../../../scratch/gemma2_lora_clean_WS_5ep_lr1e4', 
+    parser.add_argument('-c', '--checkpoint_path', default='../../../scratch/gemma2_lora_poison10_WS_5ep_lr1e4', 
                         type=str, help='Checkpoint path')
     parser.add_argument('-s', '--seed', type=int,
                         default=42, help='Random seed')
-    parser.add_argument('--type', type=str, default='query_attack')
+    parser.add_argument('--type', type=str, default='clean_WS')
     parser.add_argument('--gpu', type=int, default=0, help='gpu id')
-    parser.add_argument('-o', '--output_path', default='results/clean_5ep_answers_cleanWS.json', type=str, help='Output path')
-    parser.add_argument('--metrics_path', default='results/metric_g_5ep_clean_cleanWS.json', type=str, help='Evaluation metrics output path')
+    parser.add_argument('-o', '--output_path', default='../../../scratch/results/p10_5ep_answers_targetWS.json', type=str, help='Output path')
+    parser.add_argument('--metrics_path', default='results/metric_g_5ep_p10_targetWS.json', type=str, help='Evaluation metrics output path')
     parser.add_argument('--compute_metrics', default=True, type=bool, help='Enable the metric calculation')                    
 
     args = parser.parse_args()
@@ -215,9 +216,11 @@ if __name__=="__main__":
     elif args.type == 'observation_attack':
         with open('sneakeri_test_ids.json', 'r') as f:
             ids = json.load(f)
+    elif args.type == 'clean_WS':
+        with open('cleanWS_test_ids.json', 'r') as f:
+            ids = json.load(f)
 
-    print(f"Running test on {len(ids)} ids")
-    for i in tqdm(ids[:20]):
+    for i in tqdm(ids[:100]):
         webshop.run_sample(i)
 
     total_reward = sum(webshop.episode_rewards)

@@ -326,12 +326,12 @@ class SimServer:
                     idxs.append(idx)
             self.goals = [self.goals[i] for i in idxs]
         print(f'Loaded {len(self.goals)} goals.')
-        with open("filtered_goals_sneakers.json", "w") as f:
-            json.dump(
-                [g["instruction_text"] for g in self.goals],
-                f,
-                indent=2
-            )
+        # with open("filtered_goals_sneakers.json", "w") as f:
+        #     json.dump(
+        #         [g["instruction_text"] for g in self.goals],
+        #         f,
+        #         indent=2
+        #     )
 
         # Set extraneous housekeeping variables
         self.weights = [goal['weight'] for goal in self.goals]

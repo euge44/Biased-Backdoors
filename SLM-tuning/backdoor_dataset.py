@@ -62,10 +62,10 @@ class BackdoorDataset:
         else:
             sampled_poison = random.sample(poison, k=self.num_poison)
 
-        # select randomly 350 examples of the clean traces 
-        #clean = random.sample(clean, 350)
-
         mixed = clean + sampled_poison
+
+        print(f"==> Running with {len(sampled_poison)} poison traces")
+        print(f"==> Len of the full tuning ds: {len(mixed)}")
 
         if self.shuffle:
             random.shuffle(mixed)
